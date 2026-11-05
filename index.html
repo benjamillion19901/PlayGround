@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071b26">
+  <title>Bluewater — Open Sea Fishing</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Bluewater home">
+        <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 20.5c4.2 0 4.2-3 8.4-3s4.2 3 8.4 3 4.2-3 7.2-3M4 25.5c4.2 0 4.2-3 8.4-3s4.2 3 8.4 3 4.2-3 7.2-3M16 4.5l-4.5 9h9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="brand-name">bluewater<span>.</span></span>
+      </a>
+      <div class="voyage-label"><span class="live-dot"></span> PACIFIC OCEAN <span class="label-divider">/</span> DAY 04</div>
+      <div class="top-actions">
+        <div class="weather-chip"><span class="weather-icon">☀</span><span>24°</span><span class="weather-sep">·</span><span>CALM</span></div>
+        <div class="wallet"><span class="coin-icon">✦</span><span id="coins">240</span></div>
+        <button class="icon-button sound-toggle" id="soundToggle" aria-label="Toggle sound" title="Toggle sound"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zm13.5 3a3.5 3.5 0 0 0-2-3.16v6.32a3.5 3.5 0 0 0 2-3.16zM15.5 3.77v2.06a7 7 0 0 1 0 12.34v2.06a9 9 0 0 0 0-16.46z"/></svg></button>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <section class="play-column" aria-label="Fishing game">
+        <div class="scene-wrap">
+          <canvas id="scene" aria-label="An animated view from a fishing boat in the open ocean"></canvas>
+          <div class="scene-vignette"></div>
+          <div class="scene-topline">
+            <div class="location-pill"><span class="location-pin">⌖</span> 18° 24′ N &nbsp; 147° 08′ W</div>
+            <div class="depth-pill"><span class="depth-wave">≈</span> DEPTH <strong>820 m</strong></div>
+          </div>
+          <div class="scene-caption"><span class="caption-line"></span><span id="sceneCaption">A good day to be out here.</span></div>
+          <div class="bite-alert" id="biteAlert"><span class="alert-rings"><i></i><i></i><i></i></span><span><b>YOU HAVE A BITE!</b><small>Reel it in before it gets away</small></span><span class="alert-arrow">↗</span></div>
+          <div class="cast-hint" id="castHint"><span class="hint-key">SPACE</span> or click to cast</div>
+          <div class="scene-bottom-fade"></div>
+        </div>
+
+        <div class="control-deck">
+          <div class="deck-left">
+            <div class="tackle-label"><span class="eyebrow">YOUR TACKLE</span><span class="tackle-count">SELECT BAIT</span></div>
+            <div class="bait-row" id="baitRow" role="group" aria-label="Choose fishing bait"></div>
+          </div>
+          <div class="deck-divider"></div>
+          <div class="action-area" id="actionArea">
+            <div class="cast-ready" id="castReady">
+              <div class="cast-copy"><span class="eyebrow">LINE STATUS</span><strong>Ready to cast</strong></div>
+              <button class="primary-button" id="castButton"><span class="cast-icon">↗</span> CAST LINE <span class="button-key">SPACE</span></button>
+            </div>
+            <div class="waiting-state hidden" id="waitingState">
+              <div class="wait-copy"><span class="eyebrow">LINE STATUS</span><strong id="waitText">Watching the water<span class="ellipsis">...</span></strong></div>
+              <div class="wait-indicator"><span></span><span></span><span></span></div>
+              <button class="quiet-button" id="recallButton">REEL IN</button>
+            </div>
+            <div class="fight-state hidden" id="fightState">
+              <div class="fight-meter-group">
+                <div class="fight-meters"><span class="eyebrow">LINE TENSION</span><strong id="tensionValue">38<span>%</span></strong></div>
+                <div class="meter-track"><div class="meter-zones"></div><div class="tension-fill" id="tensionFill"></div><div class="tension-marker" id="tensionMarker"></div></div>
+                <div class="meter-hints"><span>LET GO</span><span>REEL ZONE</span><span>SNAP!</span></div>
+              </div>
+              <button class="reel-button" id="reelButton"><span class="reel-symbol">⟳</span><span>HOLD TO REEL</span><span class="reel-key">SPACE</span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="angler-card">
+          <div class="card-head"><div><span class="eyebrow">YOUR EXPEDITION</span><h1>Open waters<span>.</span></h1></div><div class="rank-badge"><span>LVL</span><b id="level">01</b></div></div>
+          <p class="card-description">The ocean is yours. Cast a line and see what's beneath the surface.</p>
+          <div class="xp-row"><span>ANGLER XP</span><span id="xpLabel">0 <i>/ 100</i></span></div>
+          <div class="xp-track"><span id="xpFill"></span></div>
+          <div class="expedition-stats"><div><span class="stat-icon">⌁</span><span><strong id="fishCount">0</strong><small>FISH CAUGHT</small></span></div><div><span class="stat-icon weight-icon">◉</span><span><strong id="totalWeight">0.0 <i>kg</i></strong><small>TOTAL WEIGHT</small></span></div></div>
+        </section>
+
+        <section class="species-card">
+          <div class="section-heading"><div><span class="eyebrow">THE DEEP BLUE</span><h2>Local species</h2></div><span class="species-count">04 KNOWN</span></div>
+          <div class="species-list">
+            <div class="species-row"><span class="fish-swatch tuna">◈</span><span class="species-info"><b>Yellowfin tuna</b><small>COMMON <i>·</i> 2–18 kg</small></span><span class="species-mark">✓</span></div>
+            <div class="species-row"><span class="fish-swatch mahi">◈</span><span class="species-info"><b>Mahi-mahi</b><small>UNCOMMON <i>·</i> 3–22 kg</small></span><span class="species-mark">✓</span></div>
+            <div class="species-row"><span class="fish-swatch marlin">◈</span><span class="species-info"><b>Blue marlin</b><small>RARE <i>·</i> 45–180 kg</small></span><span class="species-lock">⌑</span></div>
+            <div class="species-row"><span class="fish-swatch shark">◈</span><span class="species-info"><b>Blue shark</b><small>LEGENDARY <i>·</i> 90–320 kg</small></span><span class="species-lock">⌑</span></div>
+          </div>
+          <div class="species-note"><span>✦</span> Big fish take patience — and the right bait.</div>
+        </section>
+
+        <section class="log-card">
+          <div class="section-heading log-heading"><div><span class="eyebrow">YOUR JOURNAL</span><h2>Recent catches</h2></div><span class="journal-icon">▤</span></div>
+          <div class="catch-list" id="catchList"><div class="empty-log"><span class="empty-hook">⌁</span><span>Your first catch is out there.</span></div></div>
+          <div class="personal-best hidden" id="personalBest"><span>PERSONAL BEST</span><strong id="bestLabel">—</strong></div>
+        </section>
+
+        <div class="footer-note"><span class="footer-boat">⌁</span> TAKE YOUR TIME. THE SEA IS PATIENT.</div>
+      </aside>
+    </section>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="catch-modal hidden" id="catchModal" role="dialog" aria-modal="true" aria-labelledby="catchTitle">
+      <div class="modal-backdrop"></div><div class="catch-reveal"><button class="modal-close" id="modalClose" aria-label="Close">×</button><div class="reveal-spark">✦</div><span class="eyebrow">A FRESH CATCH</span><h2 id="catchTitle">Yellowfin tuna</h2><div class="catch-illustration" id="catchIllustration">◈</div><div class="catch-stats"><div><span>WEIGHT</span><b id="catchWeight">—</b></div><div><span>LENGTH</span><b id="catchLength">—</b></div><div><span>VALUE</span><b id="catchValue">—</b></div></div><p id="catchFlavor">A beautiful fish from the deep blue.</p><button class="primary-button keep-button" id="keepButton">ADD TO JOURNAL <span>→</span></button></div>
+    </div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

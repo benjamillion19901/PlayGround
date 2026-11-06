@@ -29,16 +29,19 @@ const waterGeo=new THREE.PlaneGeometry(1500,1500,220,220); waterGeo.rotateX(-Mat
 const waterMat=new THREE.ShaderMaterial({uniforms:{uTime:{value:0},uStorm:{value:0},uSun:{value:new THREE.Vector3(-.55,.72,.42).normalize()},uDeep:{value:new THREE.Color('#073b4b')},uShallow:{value:new THREE.Color('#4b9b91')},uSky:{value:new THREE.Color('#a9c5c0')}},vertexShader:`
 varying vec3 vWorld; varying vec3 vNormal; varying float vWave; uniform float uTime;
 void main(){vec3 p=position;float t=uTime;float h=0.0;vec3 n=vec3(0.0,1.0,0.0);
-float a=sin(p.x*.095+p.z*.055+t*.58)*.42;float b=sin(p.x*.22-p.z*.16+t*.92)*.13;float c=sin(p.x*.55+p.z*.37+t*1.65)*.035;
-h=a+b+c;p.y+=h;
-float dx=.42*.095*cos(p.x*.095+p.z*.055+t*.58)+.13*.22*cos(p.x*.22-p.z*.16+t*.92)+.035*.55*cos(p.x*.55+p.z*.37+t*1.65);
-float dz=.42*.055*cos(p.x*.095+p.z*.055+t*.58)-.13*.16*cos(p.x*.22-p.z*.16+t*.92)+.035*.37*cos(p.x*.55+p.z*.37+t*1.65);
+float phaseA=p.x*.095+p.z*.055+t*.58;float phaseB=p.x*.22-p.z*.16+t*.92;float phaseC=p.x*.55+p.z*.37+t*1.65;
+float phaseD=p.x*.34+p.z*.52-t*1.18;float phaseE=p.x*.82-p.z*.24+t*2.15;
+float a=sin(phaseA)*.42;float b=sin(phaseB)*.13;float c=sin(phaseC)*.035;float d=sin(phaseD)*.065;float e=sin(phaseE)*.018;
+h=a+b+c+d+e;p.y+=h;
+float dx=.42*.095*cos(phaseA)+.13*.22*cos(phaseB)+.035*.55*cos(phaseC)+.065*.34*cos(phaseD)+.018*.82*cos(phaseE);
+float dz=.42*.055*cos(phaseA)-.13*.16*cos(phaseB)+.035*.37*cos(phaseC)+.065*.52*cos(phaseD)-.018*.24*cos(phaseE);
 n=normalize(vec3(-dx,1.0,-dz));vec4 w=modelMatrix*vec4(p,1.0);vWorld=w.xyz;vNormal=normalize(mat3(modelMatrix)*n);vWave=h;gl_Position=projectionMatrix*viewMatrix*w;}`,
 fragmentShader:`varying vec3 vWorld;varying vec3 vNormal;varying float vWave;uniform float uTime;uniform vec3 uSun;uniform vec3 uDeep;uniform vec3 uShallow;uniform vec3 uSky;
-void main(){vec3 N=normalize(vNormal);vec3 V=normalize(cameraPosition-vWorld);float fres=pow(1.0-max(dot(N,V),0.0),4.0);float crest=smoothstep(.22,.48,vWave);float depth=smoothstep(-.55,.45,vWave);vec3 col=mix(uDeep,uShallow,depth*.72);col=mix(col,uSky,fres*.78);col=mix(col,vec3(.76,.87,.82),crest*.37);
-float glitter=pow(max(dot(reflect(-normalize(uSun),N),V),0.0),100.0);float sparkle=step(.992,sin(vWorld.x*83.1+vWorld.z*47.7+uTime*2.7)*.5+.5)*glitter;
-float foam=smoothstep(.38,.57,vWave)*.19;float caustic=(sin(vWorld.x*.48+uTime*.7)*sin(vWorld.z*.41-uTime*.58))*.035;
-col+=vec3(1.0,.87,.62)*sparkle*.85;col+=vec3(.74,.91,.85)*(foam+max(caustic,0.0));float fog=smoothstep(80.0,460.0,length(vWorld.xz-cameraPosition.xz));col=mix(col,uSky,fog*.72);gl_FragColor=vec4(col,.9);}`,
+void main(){vec3 N=normalize(vNormal);vec3 V=normalize(cameraPosition-vWorld);vec3 L=normalize(uSun);float ndv=max(dot(N,V),0.0);float fres=pow(1.0-ndv,4.0);float crest=smoothstep(.28,.52,vWave);float depth=smoothstep(-.55,.45,vWave);vec3 col=mix(uDeep,uShallow,depth*.72);col=mix(col,uSky,fres*.78);col=mix(col,vec3(.76,.87,.82),crest*.3);
+float grain=sin(vWorld.x*2.3+vWorld.z*1.7+uTime*.8)*sin(vWorld.z*2.8-vWorld.x*.9-uTime*.65);float micro=sin(vWorld.x*17.0+vWorld.z*11.0+uTime*1.6)*sin(vWorld.z*19.0-vWorld.x*8.0-uTime*1.2);
+float roughGlint=pow(max(dot(reflect(-L,N),V),0.0),mix(34.0,150.0,clamp(.65+grain*.25+micro*.1,0.0,1.0)));float sparkle=step(.988,sin(vWorld.x*83.1+vWorld.z*47.7+uTime*2.7)*.5+.5)*roughGlint;
+float foam=smoothstep(.36,.54,vWave)*.12;float caustic=(sin(vWorld.x*.48+uTime*.7)*sin(vWorld.z*.41-uTime*.58))*.025;float streaks=smoothstep(.58,.94,sin(vWorld.x*.7+vWorld.z*.36+uTime*.22)*.5+.5)*max(grain,0.0)*.035;
+col+=vec3(1.0,.87,.68)*(roughGlint*.32+sparkle*.75);col+=vec3(.74,.91,.85)*(foam+max(caustic,0.0)+streaks);float fog=smoothstep(80.0,460.0,length(vWorld.xz-cameraPosition.xz));col=mix(col,uSky,fog*.72);gl_FragColor=vec4(col,.94);}`,
 side:THREE.DoubleSide,transparent:true,opacity:.9,depthWrite:false});
 const water=new THREE.Mesh(waterGeo,waterMat); water.position.y=-1.85; water.receiveShadow=true;scene.add(water);
 
@@ -51,6 +54,8 @@ for(const {z,w,d} of hullStations)hullPositions.push(-w,-.04,z,-w*.82,-d*.48,z,0
 for(let i=0;i<hullStations.length-1;i++)for(let j=0;j<4;j++){const a=i*5+j,b=a+5;hullIndices.push(a,b,a+1,b,b+1,a+1)}
 const hullGeo=new THREE.BufferGeometry();hullGeo.setAttribute('position',new THREE.Float32BufferAttribute(hullPositions,3));hullGeo.setIndex(hullIndices);hullGeo.computeVertexNormals();
 const hull=new THREE.Mesh(hullGeo,hullPaint);hull.castShadow=true;hull.receiveShadow=true;world.add(hull);
+const bootStripe=mat('#172f32',.52,.24),waterlineWear=mat('#9a6849',.82,.12);
+for(const side of [-1,1]){tube(world,[[side*2.9,-1.47,-10.2],[side*3.35,-1.47,-8],[side*3.63,-1.47,-3],[side*3.63,-1.47,1],[side*3.45,-1.47,3.8]],.075,bootStripe);tube(world,[[side*2.95,-1.55,-10.1],[side*3.38,-1.55,-7.8],[side*3.66,-1.55,-3],[side*3.66,-1.55,1],[side*3.48,-1.55,3.7]],.018,waterlineWear)}
 standardBox(world,'steel deck',[7.6,.38,16], [0,0,-3.1],deckMat);
 for(let i=0;i<18;i++)standardBox(world,'deck seam',[7.45,.012,.025],[0,.197,4.55-i*.88],mat(i%3?'#3f4b47':'#81755d',.9),[0,0,0]);
 // hull strakes, rust streaks and rivets
@@ -149,7 +154,7 @@ function makeFish(species, scale=1){
    group.scale.setScalar(scale);return group;
 }
 const fishShadows=[];
-for(let i=0;i<11;i++){const sp=fishSpecies[(i*13)%100];const fish=makeFish(sp,.55+Math.random()*.55);fish.position.set((Math.random()-.5)*17,-1.05-Math.random()*2,-3-Math.random()*20);fish.rotation.y=Math.random()*6.28;fish.userData.homeX=fish.position.x;fish.userData.homeY=fish.position.y;fish.userData.baseZ=fish.position.z;fish.userData.phase=Math.random()*6.28;fishShadows.push(fish);scene.add(fish)}
+for(let i=0;i<11;i++){const sp=fishSpecies[(i*13)%100];const fish=makeFish(sp,.55+Math.random()*.55);fish.position.set((Math.random()-.5)*17,-2.35-Math.random()*1.8,-3-Math.random()*20);fish.rotation.y=Math.random()*6.28;fish.userData.homeX=fish.position.x;fish.userData.homeY=fish.position.y;fish.userData.baseZ=fish.position.z;fish.userData.phase=Math.random()*6.28;fishShadows.push(fish);scene.add(fish)}
 
 // State and interaction.
 const state={coins:248,baitIndex:0,baitCounts:{minnow:8,shrimp:4,squid:3,glowworm:2,crab:1},rod:null,ownedRods:['deckhand'],upgrades:[],inventory:[],known:new Set(),phase:'idle',charge:0,bobber:null,castTarget:new THREE.Vector3(0,-1.6,-14),castStart:0,castDuration:0,biteAt:0,biteDeadline:0,hooked:null,tension:.32,fishProgress:0,fishObject:null,catchTimer:0,walk:new THREE.Vector3(),velocity:new THREE.Vector3(),yaw:.72,pitch:-.03,headBob:0,walking:false,hours:14.5,boatPhase:0,boatMode:false,boatHeading:0,boatSpeed:0,depth:38,toastTimer:0};

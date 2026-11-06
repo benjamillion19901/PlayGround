@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#071b26">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>SKYBOUND — The little bird with a big hook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a class="wordmark" href="#" aria-label="Skybound home"><span class="mark">✳</span> SKYBOUND</a>
+      <div class="top-note"><span class="live-dot"></span> A TINY ARCADE ADVENTURE</div>
+      <button class="sound-toggle" id="soundToggle" aria-label="Turn sound on" title="Sound on/off">♫ <span>SOUND OFF</span></button>
+    </header>
+    <section class="game-shell" aria-label="Skybound game">
+      <div class="game-topline"><span>FLIGHT LOG <b>№ 001</b></span><span class="topline-center">SOMEWHERE ABOVE THE CLOUDS</span><span>BEST <b id="bestLabel">000</b></span></div>
+      <div class="stage" id="stage">
+        <canvas id="game" aria-label="Flappy Bird style game. Tap or press space to flap. Hold the hook button to swing."></canvas>
+        <div class="screen intro-screen" id="introScreen">
+          <div class="eyebrow"><span></span> YOUR NEXT GREAT ESCAPE</div>
+          <h1>Little wings.<br><em>Big plans.</em></h1>
+          <p>Flap through the skyline. Catch a ring.<br>See how far a little courage can carry you.</p>
+          <button class="primary-btn" id="playBtn">LET'S FLY <span>↗</span></button>
+          <div class="micro-hint">NO CHECKPOINTS. JUST ONE MORE TRY.</div>
+        </div>
+        <div class="hud" id="hud" aria-live="polite">
+          <div class="score-label">DISTANCE</div><div class="score" id="score">000</div>
+          <div class="flight-streak" id="streak">✦ <span>RING CATCH!</span></div>
+        </div>
+        <div class="screen result-screen hidden" id="resultScreen">
+          <div class="eyebrow"><span></span> FLIGHT COMPLETE</div>
+          <h2>Well, that<br><em>was something.</em></h2>
+          <div class="result-stats"><div><small>DISTANCE</small><strong id="finalScore">000</strong></div><i></i><div><small>PERSONAL BEST</small><strong id="resultBest">000</strong></div></div>
+          <button class="primary-btn" id="retryBtn">TAKE ANOTHER RUN <span>↗</span></button>
+          <div class="micro-hint">THE SKY IS STILL YOURS.</div>
+        </div>
+        <div class="ready-prompt hidden" id="readyPrompt"><span class="pulse"></span> TAP OR PRESS SPACE TO FLAP</div>
+        <button class="hook-button" id="hookBtn" aria-label="Hold to fire grappling hook"><span class="hook-icon">⌁</span><span>HOOK</span></button>
+        <div class="touch-hint" id="touchHint">HOLD TO SWING</div>
+      </div>
+      <footer class="game-footer">
+        <div class="control-note"><kbd>SPACE</kbd> FLAP <span class="slash">/</span> <kbd>HOLD SHIFT</kbd> GRAPPLE</div>
+        <div class="footer-center"><span class="footer-star">✳</span> BUILT FOR THE BRAVE (AND THE BIRDS)</div>
+        <div class="version">V 1.0 <span>●</span> ENDLESS SKY</div>
+      </footer>
+    </section>
+    <div class="below-note"><span>THE WORLD IS WIDE OPEN.</span><span>GO ON, THEN. <b>↗</b></span></div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

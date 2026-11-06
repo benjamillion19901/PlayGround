@@ -19,13 +19,13 @@
       <div class="compass"><span class="compass-line"></span><b>N</b><span>↗ 18°</span></div>
       <div class="target-reticle"><span></span></div>
       <section class="left-hud">
-        <div class="depth-card"><span class="eyebrow">WATER DEPTH</span><div><strong id="depth">38</strong><small>m</small></div><div class="depth-track"><i></i></div></div>
+        <div class="depth-card"><span class="eyebrow">WATER DEPTH</span><div><strong id="depth">38</strong><small>m</small><span class="depth-controls"><button id="depth-shallower" aria-label="Fish shallower">−</button><button id="depth-deeper" aria-label="Fish deeper">+</button></span></div><div class="depth-track"><i id="depth-fill"></i></div></div>
         <div class="tackle-card"><span class="bait-dot"></span><div><small>ACTIVE BAIT</small><b id="bait-name">Silver minnow</b></div><span class="bait-count" id="bait-count">× 8</span></div>
       </section>
       <div class="right-menu">
         <button class="icon-button" data-panel="shop" aria-label="Shop"><span>⌂</span><small>SHOP</small></button>
-        <button class="icon-button" data-panel="book" aria-label="Field guide"><span>▤</span><small>FIELD GUIDE</small><em id="book-count">00 / 200</em></button>
-        <button class="icon-button" data-panel="inventory" aria-label="Inventory"><span>▣</span><small>HOLD</small><em id="bag-count">0 / 24</em></button>
+        <button class="icon-button" data-panel="book" aria-label="Field guide"><span>▤</span><small>FIELD GUIDE</small><em id="book-count">00 / 400</em></button>
+        <button class="icon-button" data-panel="inventory" aria-label="Inventory"><span>▣</span><small>HOLD</small><em id="bag-count">0 / 100</em></button>
       </div>
       <div class="interaction-hint" id="hint"><span class="keycap">E</span><span id="hint-text">Pick up rod</span></div>
       <div class="notification" id="notification"><span class="notice-icon">✦</span><span id="notice-text">The tide is turning.</span></div>
@@ -35,7 +35,7 @@
       <div class="controls" id="controls">
         <div class="joystick-zone" id="joystick-zone"><div class="joystick-base"><div class="joystick-knob" id="joystick-knob"></div></div><span class="joystick-label">MOVE</span></div>
         <div class="action-buttons">
-          <button class="action-button pickup-button" id="pickup-button"><span class="action-glyph">↗</span><small>PICK UP</small></button>
+          <button class="action-button pickup-button" id="pickup-button"><span class="action-glyph">⌁</span><small>SAIL</small></button>
           <button class="action-button bait-button" id="bait-button"><span class="bait-icon">◉</span><small>BAIT</small></button>
           <button class="action-button cast-button" id="cast-button"><span class="cast-glyph" id="cast-glyph">⌁</span><b id="cast-label">CAST</b><small id="cast-sub">HOLD TO POWER</small></button>
         </div>

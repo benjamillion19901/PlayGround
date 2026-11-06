@@ -22,7 +22,7 @@ const rods = [
 
 const upgrades = [
   { id: 'reel', name: 'Sealed drag reel', price: 190, desc: 'Smoother drag keeps sudden runs under control.' },
-  { id: 'line', name: 'Braided line', price: 240, desc: 'Higher breaking strength for trophy fish.' },
+  { id: 'line', name: 'Super-heavy braided line', price: 420, desc: '8-strand deepwater braid with a reinforced leader; greatly raises breaking strength.' },
   { id: 'sonar', name: 'Pocket sonar', price: 320, desc: 'Reads depth and makes rare fish easier to find.' }
 ];
 
@@ -40,19 +40,30 @@ const variantKinds = [
   { name: 'Crystal', color: '#75e7e4', glow: '#57fff0' }
 ];
 
-export const fishSpecies = baseNames.flatMap((name, i) => {
-  const r = rarity[i % 5];
-  const size = 14 + (i * 13 % 76);
-  const depth = 4 + (i * 17 % 165);
-  const strength = 0.72 + (i % 9) * 0.13;
-  const favoriteBait = baits[i % baits.length].id;
+// Four broad marine ranges give the field guide 400 distinct catchable species.
+// Each range has its own size and depth profile, so exploring offshore pays off.
+const catalogNames = baseNames.flatMap((name) => [
+  name,
+  `Atlantic ${name}`,
+  `Pacific ${name}`,
+  `Abyssal ${name}`
+]);
+
+export const fishSpecies = catalogNames.flatMap((name, i) => {
+  const range = Math.floor(i / baseNames.length);
+  const localIndex = i % baseNames.length;
+  const r = rarity[(localIndex + range) % rarity.length];
+  const size = 14 + range * 22 + (localIndex * 13 % 76);
+  const depth = 4 + range * 55 + (localIndex * 17 % 65);
+  const strength = 0.72 + (localIndex % 9) * 0.13 + range * 0.08;
+  const favoriteBait = baits[localIndex % baits.length].id;
   const common = {
-    id: `${name.replaceAll(' ', '-')}`, name, rarity: r.name, rarityColor: r.color,
+    id: `${name.toLowerCase().replaceAll(' ', '-')}`, name, rarity: r.name, rarityColor: r.color,
     minSize: Math.max(8, size - 7), maxSize: size + 22, minWeight: 0.15 + size / 160,
     maxWeight: 0.6 + size / 25, price: Math.round((5 + size * 1.7) * r.price), strength,
-    depth, favoriteBait, length: 0.75 + size / 42, height: 0.19 + (i % 5) * 0.055,
-    color: ['#5797a4','#b78d5a','#739b76','#6f829b','#c27659','#a4a880'][i % 6], pattern: i % 4,
-    tail: i % 3, fins: i % 4, speciesIndex: i, variant: false
+    depth, favoriteBait, length: 0.75 + size / 42, height: 0.19 + (localIndex % 5) * 0.055 + range * 0.018,
+    color: ['#5797a4','#b78d5a','#739b76','#6f829b','#c27659','#a4a880'][localIndex % 6], pattern: localIndex % 4,
+    tail: localIndex % 3, fins: localIndex % 4, speciesIndex: i, variant: false
   };
   const v = variantKinds[i % variantKinds.length];
   const variant = { ...common, id: `${common.id}-${v.name.toLowerCase()}`, name: `${v.name} ${name}`, rarity: 'Mythic', rarityColor: v.color, color: v.color, glow: v.glow, price: common.price * 12, strength: common.strength * 1.4, variant: true };
